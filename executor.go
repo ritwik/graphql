@@ -4,11 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"reflect"
+	"runtime/debug"
 	"strings"
 
-	"github.com/graphql-go/graphql/gqlerrors"
-	"github.com/graphql-go/graphql/language/ast"
+	"github.com/ritwik/graphql/gqlerrors"
+	"github.com/ritwik/graphql/language/ast"
 )
 
 type ExecuteParams struct {
@@ -36,6 +38,8 @@ func Execute(p ExecuteParams) (result *Result) {
 	go func(out chan<- *Result, done <-chan struct{}) {
 		defer func() {
 			if err := recover(); err != nil {
+				log.Printf("Recovered from panic in Execute: %+v", err)
+				debug.PrintStack()
 				result.Errors = append(result.Errors, gqlerrors.FormatError(err.(error)))
 			}
 			select {
@@ -480,6 +484,8 @@ func resolveField(eCtx *executionContext, parentType *Object, source interface{}
 	var returnType Output
 	defer func() (interface{}, resolveFieldResultState) {
 		if r := recover(); r != nil {
+			log.Printf("Recovered from panic in resolveField: %+v", r)
+			debug.PrintStack()
 			handleFieldError(r, FieldASTsToNodeASTs(fieldASTs), path, returnType, eCtx)
 			return result, resultState
 		}
@@ -541,6 +547,8 @@ func completeValueCatchingError(eCtx *executionContext, returnType Type, fieldAS
 	// catch panic
 	defer func() interface{} {
 		if r := recover(); r != nil {
+			log.Printf("Recovered from panic in completeValueCatchingError: %+v", r)
+			debug.PrintStack()
 			handleFieldError(r, FieldASTsToNodeASTs(fieldASTs), path, returnType, eCtx)
 			return completed
 		}

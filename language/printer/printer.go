@@ -2,12 +2,14 @@ package printer
 
 import (
 	"fmt"
+	"log"
+	"runtime/debug"
 	"strings"
 
 	"reflect"
 
-	"github.com/graphql-go/graphql/language/ast"
-	"github.com/graphql-go/graphql/language/visitor"
+	"github.com/ritwik/graphql/language/ast"
+	"github.com/ritwik/graphql/language/visitor"
 )
 
 func getMapValue(m map[string]interface{}, key string) interface{} {
@@ -811,6 +813,8 @@ var printDocASTReducer = map[string]visitor.VisitFunc{
 func Print(astNode ast.Node) (printed interface{}) {
 	defer func() interface{} {
 		if r := recover(); r != nil {
+			log.Printf("Recovered from panic in Print: %+v", r)
+			debug.PrintStack()
 			return fmt.Sprintf("%v", astNode)
 		}
 		return printed

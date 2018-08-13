@@ -1,11 +1,11 @@
 defaults: &defaults
-  working_directory: /go/src/github.com/graphql-go/graphql
+  working_directory: /go/src/github.com/ritwik/graphql
   steps:
     - checkout
     - run: go get -v -t -d ./...
     - run: go test ./...
     - run: go vet ./...
- 
+
 version: 2
 jobs:
   golang:1.8.7:
@@ -21,7 +21,7 @@ jobs:
     docker:
       - image: circleci/golang:latest
   coveralls:
-    working_directory: /go/src/github.com/graphql-go/graphql
+    working_directory: /go/src/github.com/ritwik/graphql
     docker:
       - image: circleci/golang:latest
     steps:
