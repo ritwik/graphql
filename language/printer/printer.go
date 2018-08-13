@@ -2,6 +2,8 @@ package printer
 
 import (
 	"fmt"
+	"log"
+	"runtime/debug"
 	"strings"
 
 	"reflect"
@@ -811,6 +813,8 @@ var printDocASTReducer = map[string]visitor.VisitFunc{
 func Print(astNode ast.Node) (printed interface{}) {
 	defer func() interface{} {
 		if r := recover(); r != nil {
+			log.Printf("Recovered from panic in Print: %+v", r)
+			debug.PrintStack()
 			return fmt.Sprintf("%v", astNode)
 		}
 		return printed
